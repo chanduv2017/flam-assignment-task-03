@@ -69,5 +69,5 @@ npm run dev
 ![Event Form](./public/assets/event-form.png)
 
 ### 🔁 populated Calendar view
-![Drag and Drop](./public/assets/populated-calendar-view.png)
+![populated view](./public/assets/populated-calender-view.png)
 
