@@ -214,231 +214,215 @@ const EventForm = ({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[500px] bg-background">
-          <DialogHeader>
-            <DialogTitle>
-              {isEditing ? "Edit Event" : "Add New Event"}
-            </DialogTitle>
-          </DialogHeader>
+      <div className="flex flex-col space-y-1.5 text-center sm:text-left py-4">
+        <h2 className="text-lg font-semibold leading-none tracking-tight">
+          {isEditing ? "Edit Event" : "Add New Event"}
+        </h2>
+      </div>
 
-          <div className="grid gap-4 py-4">
-            {/* Event Title */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
-              </Label>
+      <div className="grid gap-4 py-4">
+        {/* Event Title */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="title" className="text-right">
+            Title
+          </Label>
+          <Input
+            id="title"
+            value={event.title}
+            onChange={(e) => handleInputChange("title", e.target.value)}
+            className="col-span-3"
+            placeholder="Event title"
+            required
+          />
+        </div>
+
+        {/* Event Date */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label className="text-right">Date</Label>
+          <div className="col-span-3">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(date) => {
+                    if (date) {
+                      setDate(date);
+                      handleInputChange("date", date);
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        {/* Event Time */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label className="text-right">Time</Label>
+          <div className="col-span-3 flex gap-2 items-center">
+            <div className="flex items-center">
+              <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
               <Input
-                id="title"
-                value={event.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
-                className="col-span-3"
-                placeholder="Event title"
+                type="time"
+                value={event.startTime}
+                onChange={(e) => handleInputChange("startTime", e.target.value)}
+                className="w-24"
                 required
               />
             </div>
-
-            {/* Event Date */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Date</Label>
-              <div className="col-span-3">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(date) => {
-                        if (date) {
-                          setDate(date);
-                          handleInputChange("date", date);
-                        }
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-
-            {/* Event Time */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Time</Label>
-              <div className="col-span-3 flex gap-2 items-center">
-                <div className="flex items-center">
-                  <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="time"
-                    value={event.startTime}
-                    onChange={(e) =>
-                      handleInputChange("startTime", e.target.value)
-                    }
-                    className="w-24"
-                    required
-                  />
-                </div>
-                <span>to</span>
-                <Input
-                  type="time"
-                  value={event.endTime}
-                  onChange={(e) => handleInputChange("endTime", e.target.value)}
-                  className="w-24"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Event Description */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
-              <Textarea
-                id="description"
-                value={event.description}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
-                className="col-span-3"
-                placeholder="Event description"
-              />
-            </div>
-
-            {/* Recurrence Options */}
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label className="text-right pt-2">Recurrence</Label>
-              <div className="col-span-3">
-                <RadioGroup
-                  value={event.recurrence.type}
-                  onValueChange={(value) =>
-                    handleRecurrenceChange(value as any)
-                  }
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="none" id="r-none" />
-                    <Label htmlFor="r-none">None</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="daily" id="r-daily" />
-                    <Label htmlFor="r-daily">Daily</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="weekly" id="r-weekly" />
-                    <Label htmlFor="r-weekly">Weekly</Label>
-                  </div>
-
-                  {event.recurrence.type === "weekly" && (
-                    <div className="ml-6 mt-2 flex flex-wrap gap-2">
-                      {weekdays.map((day) => (
-                        <div key={day} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`day-${day}`}
-                            checked={(event.recurrence.days || []).includes(
-                              day,
-                            )}
-                            onCheckedChange={() => handleWeekdayToggle(day)}
-                          />
-                          <Label htmlFor={`day-${day}`}>
-                            {day.substring(0, 3)}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="monthly" id="r-monthly" />
-                    <Label htmlFor="r-monthly">Monthly</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="custom" id="r-custom" />
-                    <Label htmlFor="r-custom">Custom</Label>
-                  </div>
-
-                  {event.recurrence.type === "custom" && (
-                    <div className="ml-6 mt-2 flex items-center gap-2">
-                      <Label>Every</Label>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={event.recurrence.interval || 1}
-                        onChange={(e) =>
-                          setEvent((prev) => ({
-                            ...prev,
-                            recurrence: {
-                              ...prev.recurrence,
-                              interval: parseInt(e.target.value) || 1,
-                            },
-                          }))
-                        }
-                        className="w-16"
-                      />
-                      <Label>weeks</Label>
-                    </div>
-                  )}
-                </RadioGroup>
-              </div>
-            </div>
-
-            {/* Event Color */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="color" className="text-right">
-                Color
-              </Label>
-              <Select
-                value={event.color}
-                onValueChange={(value) => handleInputChange("color", value)}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select a color" />
-                </SelectTrigger>
-                <SelectContent>
-                  {colorOptions.map((color) => (
-                    <SelectItem key={color.value} value={color.value}>
-                      <div className="flex items-center">
-                        <div
-                          className="w-4 h-4 rounded-full mr-2"
-                          style={{ backgroundColor: color.value }}
-                        />
-                        {color.label}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <span>to</span>
+            <Input
+              type="time"
+              value={event.endTime}
+              onChange={(e) => handleInputChange("endTime", e.target.value)}
+              className="w-24"
+              required
+            />
           </div>
+        </div>
 
-          <DialogFooter className="flex justify-between">
-            {isEditing && (
-              <Button
-                variant="destructive"
-                onClick={handleDelete}
-                type="button"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </Button>
-            )}
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={onClose} type="button">
-                Cancel
-              </Button>
-              <Button onClick={handleSave} type="button">
-                Save
-              </Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        {/* Event Description */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="description" className="text-right">
+            Description
+          </Label>
+          <Textarea
+            id="description"
+            value={event.description}
+            onChange={(e) => handleInputChange("description", e.target.value)}
+            className="col-span-3"
+            placeholder="Event description"
+          />
+        </div>
+
+        {/* Recurrence Options */}
+        <div className="grid grid-cols-4 items-start gap-4">
+          <Label className="text-right pt-2">Recurrence</Label>
+          <div className="col-span-3">
+            <RadioGroup
+              value={event.recurrence.type}
+              onValueChange={(value) => handleRecurrenceChange(value as any)}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="none" id="r-none" />
+                <Label htmlFor="r-none">None</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="daily" id="r-daily" />
+                <Label htmlFor="r-daily">Daily</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="weekly" id="r-weekly" />
+                <Label htmlFor="r-weekly">Weekly</Label>
+              </div>
+
+              {event.recurrence.type === "weekly" && (
+                <div className="ml-6 mt-2 flex flex-wrap gap-2">
+                  {weekdays.map((day) => (
+                    <div key={day} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`day-${day}`}
+                        checked={(event.recurrence.days || []).includes(day)}
+                        onCheckedChange={() => handleWeekdayToggle(day)}
+                      />
+                      <Label htmlFor={`day-${day}`}>
+                        {day.substring(0, 3)}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="monthly" id="r-monthly" />
+                <Label htmlFor="r-monthly">Monthly</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="custom" id="r-custom" />
+                <Label htmlFor="r-custom">Custom</Label>
+              </div>
+
+              {event.recurrence.type === "custom" && (
+                <div className="ml-6 mt-2 flex items-center gap-2">
+                  <Label>Every</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={event.recurrence.interval || 1}
+                    onChange={(e) =>
+                      setEvent((prev) => ({
+                        ...prev,
+                        recurrence: {
+                          ...prev.recurrence,
+                          interval: parseInt(e.target.value) || 1,
+                        },
+                      }))
+                    }
+                    className="w-16"
+                  />
+                  <Label>weeks</Label>
+                </div>
+              )}
+            </RadioGroup>
+          </div>
+        </div>
+
+        {/* Event Color */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="color" className="text-right">
+            Color
+          </Label>
+          <Select
+            value={event.color}
+            onValueChange={(value) => handleInputChange("color", value)}
+          >
+            <SelectTrigger className="col-span-3">
+              <SelectValue placeholder="Select a color" />
+            </SelectTrigger>
+            <SelectContent>
+              {colorOptions.map((color) => (
+                <SelectItem key={color.value} value={color.value}>
+                  <div className="flex items-center">
+                    <div
+                      className="w-4 h-4 rounded-full mr-2"
+                      style={{ backgroundColor: color.value }}
+                    />
+                    {color.label}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center pt-4">
+        {isEditing && (
+          <Button variant="destructive" onClick={handleDelete} type="button">
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+        )}
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={onClose} type="button">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} type="button">
+            Save
+          </Button>
+        </div>
+      </div>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>

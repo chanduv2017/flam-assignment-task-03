@@ -126,12 +126,24 @@ const MonthlyCalendar = ({
         case "daily":
           return true; // Shows on every day after the start date
         case "weekly":
+          // First check if the day is on or after the original event date
+          if (day < eventDate) return false;
+
           // Check if the day of week matches any in the days array
           if (event.recurrence.days && event.recurrence.days.length > 0) {
             const dayName = format(day, "EEEE"); // Get day name (Monday, Tuesday, etc.)
-            return event.recurrence.days.includes(dayName);
+            if (!event.recurrence.days.includes(dayName)) return false;
+          } else {
+            // If no specific days are selected, check if it's the same day of week
+            if (format(day, "EEEE") !== format(eventDate, "EEEE")) return false;
           }
-          return isSameDay(event.date, day);
+
+          // Calculate if this is a proper weekly occurrence from the start date
+          const diffInDays = Math.round(
+            (day.getTime() - eventDate.getTime()) / (1000 * 60 * 60 * 24),
+          );
+          const diffInWeeks = Math.floor(diffInDays / 7);
+          return diffInWeeks % (event.recurrence.interval || 1) === 0;
         case "monthly":
           return day.getDate() === eventDate.getDate();
         case "custom":
@@ -211,6 +223,14 @@ const MonthlyCalendar = ({
           </div>
         ))}
 
+        {/* Add empty cells for days before the start of month */}
+        {Array.from({ length: monthStart.getDay() }).map((_, index) => (
+          <div
+            key={`empty-start-${index}`}
+            className="h-full min-h-[120px] p-1 border border-border bg-background opacity-40"
+          ></div>
+        ))}
+
         {daysInMonth.map((day) => {
           const dayEvents = getEventsForDay(day);
           return (
@@ -237,10 +257,18 @@ const MonthlyCalendar = ({
             />
           );
         })}
+
+        {/* Add empty cells for days after the end of month */}
+        {Array.from({ length: 6 - monthEnd.getDay() }).map((_, index) => (
+          <div
+            key={`empty-end-${index}`}
+            className="h-full min-h-[120px] p-1 border border-border bg-background opacity-40"
+          ></div>
+        ))}
       </div>
 
       <Dialog open={isEventFormOpen} onOpenChange={setIsEventFormOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] bg-background">
           <EventForm
             isOpen={isEventFormOpen}
             onClose={() => setIsEventFormOpen(false)}

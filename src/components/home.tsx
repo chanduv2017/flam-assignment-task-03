@@ -109,7 +109,7 @@ export default function Home() {
 
   // Save events to localStorage when they change
   useEffect(() => {
-    localStorage.setItem("calendarEvents", JSON.stringify(events));
+    if(events.length!==0)localStorage.setItem("calendarEvents", JSON.stringify(events));
   }, [events]);
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -303,7 +303,7 @@ export default function Home() {
       </main>
 
       <Dialog open={isEventFormOpen} onOpenChange={setIsEventFormOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="sm:max-w-[550px] bg-background">
           {selectedEvent && (
             <EventForm
               isOpen={isEventFormOpen}
