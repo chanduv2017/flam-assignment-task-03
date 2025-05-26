@@ -59,7 +59,7 @@ cd flam-assignment-task-03
 npm install  # or yarn install
 npm run dev
 
-
+```
 ## 📸 Screenshots
 
 ### 🗓 Monthly Calendar View
