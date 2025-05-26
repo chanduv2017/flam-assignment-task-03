@@ -63,11 +63,11 @@ npm run dev
 ## 📸 Screenshots
 
 ### 🗓 Monthly Calendar View
-![Monthly Calendar View](./assets/calendar-view.png)
+![Monthly Calendar View](./public/assets/calendar-view.png)
 
 ### 📝 Event Creation Form
-![Event Form](./assets/event-form.png)
+![Event Form](./public/assets/event-form.png)
 
 ### 🔁 populated Calendar view
-![Drag and Drop](./assets/populated-calendar-view.png)
+![Drag and Drop](./public/assets/populated-calendar-view.png)
 
